@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  netprobe:
+    build: .
+    container_name: netprobe
+    cap_add:
+      - NET_RAW        # Required for ICMP ping, MTR, traceroute
+    ports:
+      - "8000:8000"
+    volumes:
+      - netprobe-data:/data     # Persistent DB storage
+    environment:
+      - PORT=8000
+      - NETPROBE_DB=/data/netprobe.db
+      # Optional: inject Teams webhook at runtime
+      # - TEAMS_WEBHOOK=https://...
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  netprobe-data:
