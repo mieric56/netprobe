@@ -2,25 +2,28 @@
 import sys
 import os
 
-# Ensure the app root is in the Python path
+# Guarantee this directory is in Python path BEFORE any imports
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 if APP_DIR not in sys.path:
     sys.path.insert(0, APP_DIR)
 
-import uvicorn
+# Now import the app directly (not as a string for uvicorn)
+from backend.api import app  # noqa: E402
+
+import uvicorn  # noqa: E402
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    print(f"[NetProbe] Starting on port {port}")
-    print(f"[NetProbe] App dir: {APP_DIR}")
-    print(f"[NetProbe] DB path: {os.environ.get('NETPROBE_DB', '/data/netprobe.db')}")
-    print(f"[NetProbe] Frontend: {os.path.join(APP_DIR, 'frontend')}")
-    print(f"[NetProbe] Frontend exists: {os.path.isdir(os.path.join(APP_DIR, 'frontend'))}")
+    print(f"[NetProbe] Starting on port {port}", flush=True)
+    print(f"[NetProbe] App dir: {APP_DIR}", flush=True)
+    print(f"[NetProbe] Python path: {sys.path[:3]}", flush=True)
+    print(f"[NetProbe] Dir contents: {os.listdir(APP_DIR)}", flush=True)
 
+    # Pass the app object directly — NOT a string
+    # This avoids uvicorn's own import_from_string which ignores sys.path changes
     uvicorn.run(
-        "backend.api:app",
+        app,
         host="0.0.0.0",
         port=port,
         log_level="info",
-        reload=False,
     )
