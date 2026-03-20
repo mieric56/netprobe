@@ -20,6 +20,9 @@ COPY . .
 # Create data dir
 RUN mkdir -p /data
 
+# Unbuffered Python output for docker logs
+ENV PYTHONUNBUFFERED=1
+
 # Expose port
 EXPOSE 8000
 
